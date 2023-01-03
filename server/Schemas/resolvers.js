@@ -1,5 +1,5 @@
 const {User, Book} = require('../models');
-const {AuthenticalError} = require('apollo-server-express');
+const {AuthentionError} = require('apollo-server-express');
 const {signToken} = require('../utils/auth');
 
 const resolvers = {
@@ -13,7 +13,7 @@ const resolvers = {
                 return userData;
             }
 
-            throw new AuthenticalError('Not logged in');
+            throw new AuthentionError('Not logged in');
         }
     },
 
@@ -22,13 +22,13 @@ const resolvers = {
             const user=await User.findOne({email});
 
             if(!user){
-                throw new AuthenticalError('User not found');
+                throw new AuthentionError('User not found');
             }
 
             const correctPw = await user.isCorrectPassword(password);
 
             if(!correctPw){
-                throw new AuthenticalError('User not found');
+                throw new AuthentionError('User not found');
             }
 
             const token = signToken(user);
@@ -42,8 +42,30 @@ const resolvers = {
             return {token,user};
         },
 
-        saveBook:{
+        saveBook:async(parent,{input},context)=>{
+            if(context.user){
+                const updatedBookList = await User.findOneAndUpdate(
+                    {_id: context.user._id},
+                    {$addToSet:{savedBooks:input}},
+                    {new: true}
+                );
 
+                return updatedBookList;
+            }
+            throw new AuthentionError('Not logged in');
+        },
+
+        removeBook:async(parent,{bookId},context)=>{
+            if(context.user){
+                const updatedBookList = await User.findOneAndUpdate(
+                    {_id: context.user._id},
+                    {$pull:{savedBooks: {bookId: bookId}}},
+                    {new: true}
+                );
+
+                return updatedBookList;
+            }
+            throw new AuthentionError('Not logged in');
         }
     }
 }
