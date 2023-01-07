@@ -1,5 +1,5 @@
 const {User, Book} = require('../models');
-const {AuthentionError} = require('apollo-server-express');
+const {AuthenticationError} = require('apollo-server-express');
 const {signToken} = require('../utils/auth');
 
 const resolvers = {
@@ -7,13 +7,13 @@ const resolvers = {
         me: async(parent,args,context)=>{
             if(context.user){
                 const userData = await User.findOne({_id:context.user._id})
-                    .select('__V -password')
+                     
                     .populate('savedBooks');
 
                 return userData;
             }
 
-            throw new AuthentionError('Not logged in');
+            throw new AuthenticationError('Not logged in');
         }
     },
 
@@ -22,13 +22,13 @@ const resolvers = {
             const user=await User.findOne({email});
 
             if(!user){
-                throw new AuthentionError('User not found');
+                throw new AuthenticationError('User not found');
             }
 
             const correctPw = await user.isCorrectPassword(password);
 
             if(!correctPw){
-                throw new AuthentionError('User not found');
+                throw new AuthenticationError('User not found');
             }
 
             const token = signToken(user);
@@ -65,7 +65,7 @@ const resolvers = {
 
                 return updatedBookList;
             }
-            throw new AuthentionError('Not logged in');
+            throw new AuthenticationError('Not logged in');
         }
     }
 }
