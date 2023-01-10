@@ -7,9 +7,7 @@ const resolvers = {
         me: async(parent,args,context)=>{
             if(context.user){
                 const userData = await User.findOne({_id:context.user._id})
-                     
-                    .populate('savedBooks');
-
+            
                 return userData;
             }
 
@@ -44,9 +42,9 @@ const resolvers = {
 
         saveBook:async(parent,{input},context)=>{
             if(context.user){
-                const updatedBookList = await User.findOneAndUpdate(
+                const updatedBookList = await User.findByIdAndUpdate(
                     {_id: context.user._id},
-                    {$addToSet:{savedBooks:input}},
+                    {$push:{savedBooks:input}},
                     {new: true}
                 );
 
@@ -57,9 +55,9 @@ const resolvers = {
 
         removeBook:async(parent,{bookId},context)=>{
             if(context.user){
-                const updatedBookList = await User.findOneAndUpdate(
+                const updatedBookList = await User.findByIdAndUpdate(
                     {_id: context.user._id},
-                    {$pull:{savedBooks: {bookId: bookId}}},
+                    {$pull:{savedBooks: {bookId}}},
                     {new: true}
                 );
 
