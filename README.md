@@ -36,7 +36,7 @@ To look up books and save them in a bookmarked manner for later, to track collec
 https://book-genie.herokuapp.com/
 
 ## Contribution
-Mohammad Komol Hasan
+Linkhon Hasan
 
 ## Questions
 GitHub: MKHLink
